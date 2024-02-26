@@ -11,3 +11,4 @@ pico_sdk_init()
 
 add_subdirectory(src/blink)
 add_subdirectory(src/blinks-morze)
+add_subdirectory(src/bootsel)
