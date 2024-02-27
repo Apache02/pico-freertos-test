@@ -1,4 +1,4 @@
-set(NAME pico-freertos-blinks-morze)
+set(NAME blinks-morze)
 
 project(${NAME} C CXX ASM)
 
