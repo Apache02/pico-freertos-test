@@ -2,7 +2,7 @@
 #include <task.h>
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
-#include "bootsel.h"
+#include "task-bootsel-pool/task-bootsel-pool.h"
 
 
 void taskBlinkSos(void *pvParams) {
@@ -45,7 +45,7 @@ int main() {
                 NULL
     );
 
-    initBootselTask();
+    initTaskBootselPool();
 
     vTaskStartScheduler();
 

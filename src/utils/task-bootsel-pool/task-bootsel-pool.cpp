@@ -1,4 +1,4 @@
-#include "bootsel.h"
+#include "task-bootsel-pool.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include "hardware/gpio.h"
@@ -42,7 +42,7 @@ bool __no_inline_not_in_flash_func(get_bootsel_button)() {
     return button_state;
 }
 
-void taskBootselProbe(void *pvParams) {
+void taskBootselPool(void *pvParams) {
     TickType_t xLastWakeTime = xTaskGetTickCount();
     vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(STARTUP_DELAY_MS));
 
@@ -66,8 +66,8 @@ void taskBootselProbe(void *pvParams) {
     }
 }
 
-void initBootselTask() {
-    xTaskCreate(taskBootselProbe,
+void initTaskBootselPool() {
+    xTaskCreate(taskBootselPool,
                 "bootsel",
                 1024,
                 NULL,
