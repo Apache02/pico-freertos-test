@@ -4,12 +4,12 @@
 #include "hardware/gpio.h"
 #include "hardware/sync.h"
 #include "hardware/structs/ioqspi.h"
-#include "pico/time.h"
 #include "pico/bootrom.h"
 #include <stdio.h>
 
 
-#define ENTER_BOOT_DELAY_US 3000000
+#define STARTUP_DELAY_MS 2000
+#define HOLD_BOOT_DELAY_MS 3000
 
 
 bool __no_inline_not_in_flash_func(get_bootsel_button)() {
@@ -25,7 +25,7 @@ bool __no_inline_not_in_flash_func(get_bootsel_button)() {
                     IO_QSPI_GPIO_QSPI_SS_CTRL_OEOVER_BITS);
 
     // Note we can't call into any sleep functions in flash right now
-    for (volatile int i = 0; i < 1000; ++i);
+    for (volatile int i = 0; i < 100; ++i);
 
     // The HI GPIO registers in SIO can observe and control the 6 QSPI pins.
     // Note the button pulls the pin *low* when pressed.
@@ -43,25 +43,26 @@ bool __no_inline_not_in_flash_func(get_bootsel_button)() {
 }
 
 void taskBootselProbe(void *pvParams) {
-    bool pressed = false;
-    uint64_t bootAfter = 0;
-
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(STARTUP_DELAY_MS));
 
     while (true) {
+        // got fresh xLastWakeTime value here
         if (get_bootsel_button()) {
-            auto now = time_us_64();
-            if (!pressed) {
-                bootAfter = now + ENTER_BOOT_DELAY_US;
-                pressed = true;
-            } else if (now > bootAfter) {
-                reset_usb_boot(0, 0);
+            TickType_t xBootAfterTime = xLastWakeTime + pdMS_TO_TICKS(HOLD_BOOT_DELAY_MS);
+            while (true) {
+                vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(20));
+                if (!get_bootsel_button()) {
+                    break;
+                }
+                if (xLastWakeTime > xBootAfterTime) {
+                    // goto bootloader
+                    reset_usb_boot(0, 0);
+                }
             }
-        } else {
-            pressed = false;
         }
 
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(100));
     }
 }
 
