@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 include(pico_sdk_import.cmake)
 include(scripts/functions.cmake)
-include(freertos_rp2040_import.cmake)
+include(FreeRTOS_Kernel_import.cmake)
 
 project(pico-freertos-test C CXX ASM)
 set(CMAKE_C_STANDARD 11)
