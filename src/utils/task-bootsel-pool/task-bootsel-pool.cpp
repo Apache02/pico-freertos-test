@@ -67,11 +67,17 @@ void taskBootselPool(void *pvParams) {
 }
 
 void initTaskBootselPool() {
+    TaskHandle_t handle;
+
     xTaskCreate(taskBootselPool,
-                "bootsel",
+                "bootsel-pool",
                 1024,
                 NULL,
                 tskIDLE_PRIORITY,
-                NULL
+                &handle
     );
+
+#if (configNUM_CORES > 1 && configUSE_CORE_AFFINITY == 1)
+    vTaskCoreAffinitySet(handle, 1 << 0);
+#endif
 }
