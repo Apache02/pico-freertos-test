@@ -1,6 +1,6 @@
-#ifndef BOOTSEL__H
-#define BOOTSEL__H
+#ifndef TASK_BOOTSEL_POOL__H
+#define TASK_BOOTSEL_POOL__H
 
 void initTaskBootselPool();
 
-#endif // BOOTSEL__H
+#endif // TASK_BOOTSEL_POOL__H

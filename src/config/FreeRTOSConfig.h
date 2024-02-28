@@ -87,6 +87,19 @@
 #define configTIMER_QUEUE_LENGTH                10
 #define configTIMER_TASK_STACK_DEPTH            256
 
+/* SMP port only */
+#define configNUMBER_OF_CORES                   2
+#define configRUN_MULTIPLE_PRIORITIES           1
+#if configNUMBER_OF_CORES > 1
+#define configUSE_CORE_AFFINITY                 1
+#endif
+#define configUSE_PASSIVE_IDLE_HOOK             0
+
+/* RP2040 specific */
+#define configSUPPORT_PICO_SYNC_INTEROP         1
+#define configSUPPORT_PICO_TIME_INTEROP         1
+
+#include <assert.h>
 /* Define to trap errors during development. */
 #define configASSERT(x)                         assert(x)
 
