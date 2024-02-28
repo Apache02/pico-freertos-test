@@ -18,4 +18,4 @@ target_link_libraries(${NAME}
         FreeRTOS-Kernel-Heap4
         )
 
-add_flash_target(${NAME} "${CMAKE_CURRENT_BINARY_DIR}/${NAME}.uf2")
+add_deploy_target(${NAME} "${CMAKE_CURRENT_BINARY_DIR}/${NAME}.uf2")

@@ -16,3 +16,4 @@ git clone -b smp https://github.com/FreeRTOS/FreeRTOS-Kernel --recurse-submodule
 * https://embeddedcomputing.com/technology/open-source/linux-freertos-related/using-freertos-with-the-raspberry-pi-pico
 * https://github.com/TechieLew/Using-FreeRTOS-with-the-Raspberry-Pi-Pico
 * https://github.com/racka98/PicoW-FreeRTOS-Template
+* https://github.com/smittytone/RP2040-FreeRTOS
