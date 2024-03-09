@@ -8,7 +8,6 @@
 #include "task.h"
 #include "pico/cyw43_arch.h"
 #include "lwip/apps/sntp.h"
-#include "pico/util/datetime.h"
 #include <time.h>
 #include "hardware/rtc.h"
 
@@ -93,8 +92,27 @@ void taskWifi(__unused void *pvParams) {
         tryNumber++;
 
         cyw43_arch_enable_sta_mode();
-        printf("Connecting to Wi-Fi (%s, ***)...\n", ssid);
-        if (cyw43_arch_wifi_connect_timeout_ms(ssid, password, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+
+        size_t password_length = std::min((size_t) 16, strlen(password));
+        int wifi_connect_status = 0;
+
+        if (password_length == 0) {
+            printf("Connecting to Wi-Fi [open] (%s)...\n", ssid);
+            wifi_connect_status = cyw43_arch_wifi_connect_timeout_ms(ssid, NULL, CYW43_AUTH_OPEN, 30000);
+        } else {
+            char password_masked[password_length + 1];
+            memset(password_masked, '*', password_length);
+            password_masked[password_length] = '\0';
+            printf("Connecting to Wi-Fi [WPA2] (%s, %s)...\n", ssid, password_masked);
+            wifi_connect_status = cyw43_arch_wifi_connect_timeout_ms(ssid, password, CYW43_AUTH_WPA2_AES_PSK, 30000);
+        }
+
+        if (wifi_connect_status == PICO_ERROR_BADAUTH) {
+            printf("failed to connect. Invalid password.\n");
+            cyw43_arch_disable_sta_mode();
+            tryNumber = 0;
+            vTaskDelay(pdMS_TO_TICKS(60000));
+        } else if (wifi_connect_status != PICO_OK) {
             printf("failed to connect.\n");
 
             auto delay = std::min(3, tryNumber) * 10000;
@@ -178,7 +196,7 @@ void taskSNTP(__unused void *pvParams) {
 
 void sntpSetTimeSec(uint32_t sec) {
     datetime_t date;
-    struct tm * timeinfo;
+    struct tm *timeinfo;
 
     // offset
     time_t t = sec + (60 * 0);
@@ -193,7 +211,7 @@ void sntpSetTimeSec(uint32_t sec) {
     date.month = timeinfo->tm_mon + 1;
     date.year = timeinfo->tm_year + 1900;
 
-    rtc_set_datetime (&date);
+    rtc_set_datetime(&date);
 }
 
 int main() {

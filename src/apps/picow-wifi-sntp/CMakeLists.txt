@@ -1,4 +1,4 @@
-set(NAME picow-sntp)
+set(NAME picow-wifi-sntp)
 
 set(WIFI_SSID "${WIFI_SSID}" CACHE INTERNAL "WiFi SSID for examples")
 set(WIFI_PASSWORD "${WIFI_PASSWORD}" CACHE INTERNAL "WiFi password for examples")
