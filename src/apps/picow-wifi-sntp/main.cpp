@@ -47,11 +47,11 @@ static void print_ifconfig(int itf) {
     }
 }
 
-void taskWifiLedStatus(__unused void *pvParams) {
+void taskStatusLed(__unused void *pvParams) {
     while (true) {
-        auto tcp_status = cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA);
+        auto status = cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA);
 
-        switch (tcp_status) {
+        switch (status) {
             case CYW43_LINK_UP:
                 // connected
                 cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
@@ -224,15 +224,15 @@ int main() {
         return 1;
     }
 
-
     TaskHandle_t xWifiTask;
-    xTaskCreate(taskWifiLedStatus, "wifi_led", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, &xWifiTask);
+
+    xTaskCreate(taskStatusLed, "status_led", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, NULL);
+    xTaskCreate(taskWifi, "wifi", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, &xWifiTask);
+    xTaskCreate(taskSNTP, "sntp", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, NULL);
+
 #if NO_SYS && configUSE_CORE_AFFINITY
     vTaskCoreAffinitySet(xWifiTask, 1);
 #endif
-
-    xTaskCreate(taskWifi, "wifi", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, NULL);
-    xTaskCreate(taskSNTP, "sntp", configMINIMAL_STACK_SIZE * 4, NULL, tskIDLE_PRIORITY, NULL);
 
     vTaskStartScheduler();
 
