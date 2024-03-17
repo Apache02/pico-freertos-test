@@ -78,7 +78,8 @@ static void hid_host_handle_interrupt_report(const uint8_t *report, uint16_t rep
     // check if HID Input Report
     if (report_len < 1) return;
     if (report[0] != 0xa1) return;
-    // id?
+
+    // check id?
     if (report[1] != 0x01) return;
 
     memcpy(static_cast<void *>(&last_state), &report[2], sizeof(last_state));
@@ -116,8 +117,7 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                     switch (hci_event_hid_meta_get_subevent_code(packet)) {
 
                         case HID_SUBEVENT_INCOMING_CONNECTION:
-                            log_info("HID_SUBEVENT_INCOMING_CONNECTION\n");
-                            printf_hexdump(packet, size);
+                            log_debug_hexdump("HID_SUBEVENT_INCOMING_CONNECTION", packet, size);
                             // There is an incoming connection: we can accept it or decline it.
                             // The hid_host_report_mode in the hid_host_accept_connection function
                             // allows the application to request a protocol mode.
@@ -127,8 +127,7 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                             break;
 
                         case HID_SUBEVENT_CONNECTION_OPENED:
-                            log_info("HID_SUBEVENT_CONNECTION_OPENED\n");
-                            printf_hexdump(packet, size);
+                            log_debug_hexdump("HID_SUBEVENT_CONNECTION_OPENED", packet, size);
                             // The status field of this event indicates if the control and interrupt
                             // connections were opened successfully.
                             status = hid_subevent_connection_opened_get_status(packet);
@@ -145,8 +144,7 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                             break;
 
                         case HID_SUBEVENT_DESCRIPTOR_AVAILABLE:
-                            log_info("HID_SUBEVENT_DESCRIPTOR_AVAILABLE\n");
-                            printf_hexdump(packet, size);
+                            log_debug_hexdump("HID_SUBEVENT_DESCRIPTOR_AVAILABLE", packet, size);
                             // This event will follows HID_SUBEVENT_CONNECTION_OPENED event.
                             // For incoming connections, i.e. HID Device initiating the connection,
                             // the HID_SUBEVENT_DESCRIPTOR_AVAILABLE is delayed, and some HID
@@ -181,6 +179,8 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
                     }
                     break;
                 default:
+//                    log_debug("event = %d\n", event);
+//                    log_debug_hexdump(NULL, packet, size);
                     break;
             }
             break;
