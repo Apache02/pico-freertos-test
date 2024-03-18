@@ -5,14 +5,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#include "btstack_config.h"
 #include "pico/cyw43_arch.h"
 #include "btstack.h"
 
 #include "DualSense.h"
 
-
-static const char *const dualsense_addr_string = DUALSENSE_ADDR;
 
 #if 1
 #define log_error(format, ...)      printf("[ERROR] " format, ## __VA_ARGS__)
@@ -44,6 +41,7 @@ static void log_debug_hexdump(const char *message, uint8_t *buffer, size_t size)
 #define log_debug_hexdump(...) (void)(0)
 #endif
 
+static const char *const dualsense_addr_string = DUALSENSE_ADDR;
 
 struct DualSense_InputReport_t {
     unsigned char header: 8;    // = A1
