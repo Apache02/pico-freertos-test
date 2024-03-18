@@ -18,3 +18,4 @@ git clone -b smp https://github.com/FreeRTOS/FreeRTOS-Kernel --recurse-submodule
 * https://github.com/racka98/PicoW-FreeRTOS-Template
 * https://github.com/smittytone/RP2040-FreeRTOS
 * https://github.com/jondurrant
+* https://github.com/cadouthat/pico-dualsense - DualSense example code
